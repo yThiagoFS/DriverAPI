@@ -1,4 +1,17 @@
-import { getAccount, signup } from "../src/application";
+import { GetAccount } from "../src/application/getAccount";
+import { Signup } from "../src/application/signup";
+import { AccountDAOInMemoryDatabase } from "../src/resources/AccountDAO";
+import { MailerGatewayMemory } from "../src/resources/MailerGateway";
+
+let signup: Signup;
+let getAccount: GetAccount;
+const accountDAO = new AccountDAOInMemoryDatabase();
+const mailerGateway = new MailerGatewayMemory();
+
+beforeEach(async () => {
+	signup = new Signup(accountDAO, mailerGateway);
+	getAccount = new GetAccount(accountDAO);
+});
 
 test("Deve criar uma conta para o passageiro", async function () {
 	const input = {
@@ -7,9 +20,9 @@ test("Deve criar uma conta para o passageiro", async function () {
 		cpf: "87748248800",
 		isPassenger: true
 	};
-	const outputSignup = await signup(input);
+	const outputSignup = await signup.execute(input);
 	expect(outputSignup.accountId).toBeDefined();
-	const outputGetAccount = await getAccount(outputSignup.accountId);
+	const outputGetAccount = await getAccount.execute(outputSignup);
 	expect(outputGetAccount.name).toBe(input.name);
 	expect(outputGetAccount.email).toBe(input.email);
 	expect(outputGetAccount.cpf).toBe(input.cpf);
@@ -23,7 +36,7 @@ test("Não deve criar uma conta para o passageiro se o nome for inválido", asyn
 		cpf: "87748248800",
 		isPassenger: true
 	};
-	expect(async () => await signup(input)).toThrow("Invalid Name.");
+	expect(async () => await signup.execute(input)).toThrow("Invalid Name.");
 });
 
 test("Deve criar uma conta para o motorista", async function () {
@@ -35,13 +48,13 @@ test("Deve criar uma conta para o motorista", async function () {
 		isPassenger: false,
 		isDriver: true
 	};
-	const outputSignup = await signup(input);
+	const outputSignup = await signup.execute(input);
 	expect(outputSignup.accountId).toBeDefined();
-	const outputGetAccount = await getAccount(outputSignup.accountId);
+	const outputGetAccount = await getAccount.execute(outputSignup);
 	expect(outputGetAccount.name).toBe(input.name);
 	expect(outputGetAccount.email).toBe(input.email);
 	expect(outputGetAccount.cpf).toBe(input.cpf);
 	expect(outputGetAccount.isPassenger).toBe(false);
 	expect(outputGetAccount.isDriver).toBe(false);
-	expect(outputGetAccount.car_plate).toBe(input.carPlate);
+	expect(outputGetAccount.carPlate).toBe(input.carPlate);
 });
