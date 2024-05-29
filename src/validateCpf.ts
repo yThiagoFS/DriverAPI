@@ -15,7 +15,7 @@ function removeNonDigits (cpf: string){
     return cpf.replace(/\D/g, "");
 }
 
-function isValidLength (cpf:string) {
+function isValidLength (cpf: string) {
     return cpf.length === 11;
 }
 
