@@ -1,7 +1,8 @@
-import { GetAccount } from "../src/application/getAccount";
-import { Signup } from "../src/application/signup";
-import { AccountDAODatabase, AccountDAOInMemoryDatabase } from "../src/resources/AccountDAO";
-import { MailerGatewayMemory } from "../src/resources/MailerGateway";
+import Account from "../src/domain/Account";
+import { GetAccount } from "../src/application/usecase/GetAccount";
+import { Signup } from "../src/application/usecase/SignUp";
+import { AccountRepositoryDatabase, AccountDAOInMemoryDatabase } from "../src/infra/repository/AccountRepository";
+import { MailerGatewayMemory } from "../src/infra/gateway/MailerGateway";
 import sinon from "sinon";
 
 let signup: Signup;
@@ -38,10 +39,10 @@ test("Deve criar uma conta para o com STUB", async function () {
 		cpf: "87748248800",
 		isPassenger: true
 	};
-	const saveAccountStub = sinon.stub(AccountDAODatabase.prototype, "saveAccount").resolves();
-	const getAccountByEmailStub = sinon.stub(AccountDAODatabase.prototype, "getAccountByEmail").resolves(null);
-	const getAccountByIdStub = sinon.stub(AccountDAODatabase.prototype, "getAccountById").resolves(input);
-	const accountDAODB = new AccountDAODatabase();
+	const saveAccountStub = sinon.stub(AccountRepositoryDatabase.prototype, "saveAccount").resolves();
+	const getAccountByEmailStub = sinon.stub(AccountRepositoryDatabase.prototype, "getAccountByEmail").resolves(null);
+	const getAccountByIdStub = sinon.stub(AccountRepositoryDatabase.prototype, "getAccountById").resolves(Account.restore("", input.name, input.email, input.cpf, "", true, false));
+	const accountDAODB = new AccountRepositoryDatabase();
 	const mailerGateway = new MailerGatewayMemory();
 	signup = new Signup(accountDAODB, mailerGateway);
 	getAccount = new GetAccount(accountDAODB);
@@ -75,6 +76,7 @@ test("Deve criar uma conta para o com SPY", async function () {
 	expect(outputGetAccount.isPassenger).toBe(true);
 	expect(sendSpy.calledOnce).toBe(true);
 	expect(sendSpy.calledWith(input.email, "Account created.", "Your account has been created."));
+	sendSpy.restore();
 });
 
 //Mock

@@ -1,8 +1,8 @@
-import { AccountDAO } from "../resources/AccountDAO";
+import { AccountRepository } from "../../infra/repository/AccountRepository";
 
 export class GetAccount {
 
-    constructor(readonly accountDAO: AccountDAO) {
+    constructor(readonly accountDAO: AccountRepository) {
     }
 
     async execute(input: any): Promise<any> {

@@ -1,4 +1,4 @@
-import { validate } from "../src/application/validateCpf";
+import { validate } from "../src/domain/validateCpf";
 
 test.each([
     "01234567890",

@@ -1,25 +1,27 @@
 import pgp from "pg-promise";
+import Account from "../../domain/Account";
 
-export interface AccountDAO {
-    getAccountByEmail(email: string): Promise<any>;
-    getAccountById(id: string): Promise<any>;
-    saveAccount(account: any): Promise<void>;
+export interface AccountRepository {
+    getAccountByEmail(email: string): Promise<Account | undefined>;
+    getAccountById(id: string): Promise<Account>;
+    saveAccount(account: Account): Promise<void>;
 }
 
-export class AccountDAODatabase implements AccountDAO {
+export class AccountRepositoryDatabase implements AccountRepository {
 
     async getAccountByEmail(email: string): Promise<any>  {
         const connection = pgp()("postgress://postgress:123456@localhost:5432/app");
-        const accountExists = await connection.any("select * from db.account where email = $1", [email]);
+        const [accountData] = await connection.any("select * from db.account where email = $1", [email]);
         await connection.$pool.end();
-        return accountExists;
+        if(!accountData) return;
+        return Account.restore(accountData.account_id, accountData.name, accountData.email, accountData.cpf, accountData.car_plate, accountData.is_passenger, accountData.is_driver);
     }
 
     async getAccountById(id: string): Promise<any> {
         const connection = pgp()("postgress://postgress:123456@localhost:5432/app");
-        const accountExists = await connection.any("select * from db.account where id = $1", [id]);
+        const [accountData] = await connection.any("select * from db.account where id = $1", [id]);
         await connection.$pool.end();
-        return accountExists;
+        return Account.restore(accountData.account_id, accountData.name, accountData.email, accountData.cpf, accountData.car_plate, accountData.is_passenger, accountData.is_driver);
     }
 
     async saveAccount(account: any): Promise<void> {
@@ -29,7 +31,7 @@ export class AccountDAODatabase implements AccountDAO {
     }
 }
 
-export class AccountDAOInMemoryDatabase implements AccountDAO {
+export class AccountDAOInMemoryDatabase implements AccountRepository {
     accounts: any[];
 
     constructor() {
