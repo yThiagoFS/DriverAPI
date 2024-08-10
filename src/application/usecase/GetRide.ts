@@ -18,8 +18,8 @@ export class GetRide {
             toLat: rideDb.toLat,
             toLong: rideDb.toLong,
             status: rideDb.status,
-            passengerName: passenger.name,
-            passengerEmail: passenger.email
+            passengerName: passenger.getName(),
+            passengerEmail: passenger.getEmail()
          }
     }
 }

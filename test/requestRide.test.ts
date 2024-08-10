@@ -1,13 +1,14 @@
 import { GetRide } from "../src/application/usecase/GetRide";
 import { RequestRide } from "../src/application/usecase/RequestRide";
 import { Signup } from "../src/application/usecase/SignUp";
-import { AccountRepositoryDatabase } from "../src/infra/repository/AccountRepository";
+import { AccountRepositoryInMemoryDatabase } from "../src/infra/repository/AccountRepository";
 import { MailerGatewayMemory } from "../src/infra/gateway/MailerGateway";
 import { RideRepositoryDatabase } from "../src/infra/repository/RideRepository";
+import { PgPromisseAdapter } from "../src/infra/database/DatabaseConnection";
 
 test("Deve solicitar uma corrida", async function () {
-    const accountDAO = new AccountRepositoryDatabase();
-    const rideDAO = new RideRepositoryDatabase();
+    const accountDAO = new AccountRepositoryInMemoryDatabase();
+    const rideDAO = new RideRepositoryDatabase(new PgPromisseAdapter());
     const mailerGateway = new MailerGatewayMemory();
     const signup = new Signup(accountDAO, mailerGateway);
     const inputSignUp = {
@@ -42,8 +43,8 @@ test("Deve solicitar uma corrida", async function () {
 });
 
 test("Não deve solicitar uma corrida pois não é um passageiro", async function () {
-    const accountDAO = new AccountRepositoryDatabase();
-    const rideDAO = new RideRepositoryDatabase();
+    const accountDAO = new AccountRepositoryInMemoryDatabase();
+    const rideDAO = new RideRepositoryDatabase(new PgPromisseAdapter());
     const mailerGateway = new MailerGatewayMemory();
     const signup = new Signup(accountDAO, mailerGateway);
     const inputSignUp = {
@@ -65,8 +66,8 @@ test("Não deve solicitar uma corrida pois não é um passageiro", async functio
 });
 
 test("Não pode solicitar uma corrida se o passageiro já tiver uma corrida ativa.", async function () {
-    const accountDAO = new AccountRepositoryDatabase();
-    const rideDAO = new RideRepositoryDatabase();
+    const accountDAO = new AccountRepositoryInMemoryDatabase();
+    const rideDAO = new RideRepositoryDatabase(new PgPromisseAdapter());
     const mailerGateway = new MailerGatewayMemory();
     const signup = new Signup(accountDAO, mailerGateway);
     const inputSignUp = {

@@ -1,13 +1,13 @@
 import Account from "../src/domain/Account";
 import { GetAccount } from "../src/application/usecase/GetAccount";
 import { Signup } from "../src/application/usecase/SignUp";
-import { AccountRepositoryDatabase, AccountDAOInMemoryDatabase } from "../src/infra/repository/AccountRepository";
+import { AccountRepositoryDatabase, AccountRepositoryInMemoryDatabase } from "../src/infra/repository/AccountRepository";
 import { MailerGatewayMemory } from "../src/infra/gateway/MailerGateway";
 import sinon from "sinon";
 
 let signup: Signup;
 let getAccount: GetAccount;
-const accountDAO = new AccountDAOInMemoryDatabase();
+const accountDAO = new AccountRepositoryInMemoryDatabase();
 const mailerGateway = new MailerGatewayMemory();
 
 beforeEach(async () => {
@@ -42,7 +42,7 @@ test("Deve criar uma conta para o com STUB", async function () {
 	const saveAccountStub = sinon.stub(AccountRepositoryDatabase.prototype, "saveAccount").resolves();
 	const getAccountByEmailStub = sinon.stub(AccountRepositoryDatabase.prototype, "getAccountByEmail").resolves(null);
 	const getAccountByIdStub = sinon.stub(AccountRepositoryDatabase.prototype, "getAccountById").resolves(Account.restore("", input.name, input.email, input.cpf, "", true, false));
-	const accountDAODB = new AccountRepositoryDatabase();
+	const accountDAODB = new AccountRepositoryInMemoryDatabase();
 	const mailerGateway = new MailerGatewayMemory();
 	signup = new Signup(accountDAODB, mailerGateway);
 	getAccount = new GetAccount(accountDAODB);
@@ -102,7 +102,7 @@ test("Deve criar uma conta para o com MOCK", async function () {
 
 test("Não deve criar uma conta para o passageiro se o nome for inválido", async function () {
 	const input = {
-		name: "John",
+		name: "Johnn",
 		email: `john.doe${Math.random()}@gmail.com`,
 		cpf: "87748248800",
 		isPassenger: true
@@ -121,7 +121,7 @@ test.each([
 		cpf: cpf,
 		isPassenger: true
 	};
-	expect(async () => await signup.execute(input)).toThrow("Invalid Name.");
+	expect(async () => await signup.execute(input)).toThrow("Invalid CPF.");
 });
 
 test.each(["abc@", "aaaa", "@gm", "email@com"])("Não deve criar uma conta para o passageiro se o email for inválido", async function (email: string) {

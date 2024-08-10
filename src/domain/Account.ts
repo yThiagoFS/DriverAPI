@@ -1,19 +1,20 @@
 import crypto from "crypto";
 import { validate } from "./validateCpf";
+import Name from "./Name";
+import Email from "./Email";
+import CPF from "./CPF";
+import CarPlate from "./CarPlate";
 
 export default class Account {
 
     private constructor(readonly accountId: string,
-        readonly name: string,
-        readonly email: string,
-        readonly cpf: string,
-        readonly carPlate: string,
+        private name: Name,
+        private email: Email,
+        private cpf: CPF,
+        private carPlate: CarPlate,
         readonly isPassenger: boolean,
         readonly isDriver: boolean) {
-        if (!this.name.match(/[a-zA-Z] [a-zA-Z]+/)) throw new Error("Invalid Name.");
-        if (!this.email.match(/^(.+)@(.+)$/)) throw new Error("Invalid Email.");
-        if (!validate(this.cpf)) throw new Error("Invalid CPF.");
-        if (this.isDriver && this.carPlate && !this.carPlate.match(/[A-Z]{3}[0-9]{4}/)) throw new Error("Invalid car plate.");
+     
     }
 
     static create(name: string,
@@ -23,7 +24,7 @@ export default class Account {
         isPassenger: boolean,
         isDriver: boolean) {
         const accoutId = crypto.randomUUID();
-        return new Account(accoutId, name, email, cpf, carPlate, isPassenger, isDriver);
+        return new Account(accoutId, new Name(name), new Email(email), new CPF(cpf), new CarPlate(carPlate), isPassenger, isDriver);
     }
 
     static restore(
@@ -34,6 +35,26 @@ export default class Account {
         carPlate: string,
         isPassenger: boolean,
         isDriver: boolean) {
-            return new Account(accountId, name, email, cpf, carPlate, isPassenger, isDriver);
+            return new Account(accountId, new Name(name), new Email(email), new CPF(cpf), new CarPlate(carPlate), isPassenger, isDriver);
+    }
+
+    setName(name: string) {
+        this.name = new Name(name);
+    }
+
+    getName() {
+        return this.name.getValue();
+    }
+
+    getEmail() {
+        return this.email.getValue();
+    }
+
+    getCPF() {
+        return this.cpf.getValue();
+    }
+
+    getCarPlate() {
+        return this.carPlate.getValue();
     }
 }

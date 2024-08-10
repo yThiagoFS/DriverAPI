@@ -12,7 +12,7 @@ export class Signup {
         if(accountExists) throw new Error("Account already exists.");
         const account = Account.create(input.name, input.email, input.cpf, input.carPlate, input.isPassenger, input.isDriver);
         await this.accountDAO.saveAccount(account);
-        await this.mailerGateway.send(account.email, "Account created.", "Your account has been created.");
+        await this.mailerGateway.send(account.getEmail(), "Account created.", "Your account has been created.");
         return { accountId: account.accountId };
     }
 }
