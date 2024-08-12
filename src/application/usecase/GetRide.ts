@@ -10,16 +10,21 @@ export class GetRide {
     async execute(input: Input): Promise<Output> {
         const rideDb = await this.rideDAO.getRideById(input.rideId);
         const passenger = await this.accountDAO.getAccountById(rideDb.passengerId);
+        let driver;
+        if(rideDb.driverId)
+            driver = await this.accountDAO.getAccountById(rideDb.driverId);
         return { 
             rideId: rideDb.rideId,
             passengerId: rideDb.passengerId,
-            fromLat: rideDb.fromLat,
-            fromLong: rideDb.fromLong,
-            toLat: rideDb.toLat,
-            toLong: rideDb.toLong,
-            status: rideDb.status,
+            fromLat: rideDb.getFromLat(),
+            fromLong: rideDb.getFromLong(),
+            toLat: rideDb.getToLat(),
+            toLong: rideDb.getToLong(), 
+            status: rideDb.getStatus(),
             passengerName: passenger.getName(),
-            passengerEmail: passenger.getEmail()
+            passengerEmail: passenger.getEmail(),
+            driverName: driver?.getName(),
+            driverEmail: driver?.getEmail()
          }
     }
 }
@@ -37,6 +42,8 @@ type Output = {
     toLong: number,
     status: string,
     passengerName: string,
-    passengerEmail: string
+    passengerEmail: string,
+    driverName?: string,
+    driverEmail?: string
 }
 

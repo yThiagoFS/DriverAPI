@@ -1,5 +1,4 @@
 import crypto from "crypto";
-import { validate } from "./validateCpf";
 import Name from "./Name";
 import Email from "./Email";
 import CPF from "./CPF";
