@@ -1,9 +1,14 @@
+import DistanceCalculator from "../../domain/service/DistanceCalculator";
 import { AccountRepository } from "../../infra/repository/AccountRepository";
+import { PositionRepository } from "../../infra/repository/PositionRepository";
 import { RideRepository } from "../../infra/repository/RideRepository";
 
 export class GetRide {
 
-    constructor(readonly rideDAO: RideRepository, readonly accountDAO: AccountRepository) {
+    constructor(
+            readonly rideDAO: RideRepository,
+            readonly accountDAO: AccountRepository,
+            readonly positionsRepository: PositionRepository) {
 
     }
 
@@ -24,7 +29,8 @@ export class GetRide {
             passengerName: passenger.getName(),
             passengerEmail: passenger.getEmail(),
             driverName: driver?.getName(),
-            driverEmail: driver?.getEmail()
+            driverEmail: driver?.getEmail(),
+            distance: rideDb.distance
          }
     }
 }
@@ -44,6 +50,7 @@ type Output = {
     passengerName: string,
     passengerEmail: string,
     driverName?: string,
-    driverEmail?: string
+    driverEmail?: string,
+    distance: number
 }
 

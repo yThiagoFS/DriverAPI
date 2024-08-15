@@ -1,8 +1,8 @@
 import crypto from "crypto";
-import Name from "./Name";
-import Email from "./Email";
-import CPF from "./CPF";
-import CarPlate from "./CarPlate";
+import Name from "../vo/Name";
+import Email from "../vo/Email";
+import CPF from "../vo/CPF";
+import CarPlate from "../vo/CarPlate";
 
 export default class Account {
 

@@ -1,4 +1,4 @@
-import Account from "../src/domain/Account";
+import Account from "../src/domain/entity/Account";
 import { AccountRepositoryDatabase } from "../src/infra/repository/AccountRepository";
 
 test("Deve salvar um registro na tabela account e consultar por id", async function() {
